@@ -4,7 +4,8 @@
          print-mode?
          (rename-out [make-lambda-abstraction lambda]
                      [top-interaction #%top-interaction]
-                     [app #%app])
+                     [app #%app]
+                     [lambda proc])
 
          (except-out (all-from-out racket/base)
                      lambda

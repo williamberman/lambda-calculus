@@ -11,7 +11,8 @@
          multiply
          power
          zero?
-         equal?)
+         equal?
+         natural->rkt-num)
 
 (require "pair.rkt"
          "boolean.rkt")
@@ -63,3 +64,37 @@
                      (zero? ((subtract num1) num2)))
                     (zero? ((subtract num2) num1))))))
 
+(define natural->rkt-num (proc (nat) ((nat add1) 0)))
+
+(module+ test
+  (require rackunit)
+
+  (check-equal? 0 (natural->rkt-num c0))
+  (check-equal? 1 (natural->rkt-num c1))
+  (check-equal? 2 (natural->rkt-num c2))
+  (check-equal? 3 (natural->rkt-num c3))
+
+  (check-equal? 0 (natural->rkt-num (pred c0)))
+  (check-equal? 0 (natural->rkt-num (pred c1)))
+  (check-equal? 1 (natural->rkt-num (pred c2)))
+
+  (check-equal? 5 (natural->rkt-num ((add c3) c2)))
+
+  (check-equal? 0 (natural->rkt-num ((subtract c2) c3)))
+  (check-equal? 1 (natural->rkt-num ((subtract c3) c2)))
+
+  (check-equal? 6 (natural->rkt-num ((multiply c2) c3)))
+
+  (check-equal? 8 (natural->rkt-num ((power c2) c3)))
+  (check-equal? 1 (natural->rkt-num ((power c3) c0)))
+  (check-equal? 0 (natural->rkt-num ((power c0) c3)))
+
+  (check-equal? true (zero? c0))
+  (check-equal? false (zero? c1))
+
+  (check-equal? true ((equal? c2) c2))
+  (check-equal? false ((equal? c2) c3))
+  (check-equal? false ((equal? c3) c2)))
+
+
+  

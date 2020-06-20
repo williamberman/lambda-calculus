@@ -38,6 +38,7 @@
 
 (module+ test
   (require rackunit)
+  
   (define lst ((cons 1) nil))
 
   (check-equal? (head lst) 1)
@@ -48,6 +49,4 @@
 
   (check-equal? true (nil? nil))
 
-  (check-equal 2 (head (tail (cons 1))))
-
-  )
+  (check-equal? 2 (head (tail ((cons 1) ((cons 2) nil))))))

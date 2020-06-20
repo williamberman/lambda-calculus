@@ -14,3 +14,11 @@
 
 (define second (lambda the-pair
                  (the-pair false)))
+
+(module+ test
+  (require rackunit)
+
+  (define par ((pair 1) 2))
+
+  (check-equal? 1 (first par))
+  (check-equal? 2 (second par)))

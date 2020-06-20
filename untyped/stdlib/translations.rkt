@@ -70,7 +70,7 @@
 
 (set-translation-lc->readable!
  natural
- (lambda (lc-num) ((lc-num add1) 0)))
+ natural->rkt-num)
 
 (set-translation-readable->lc!
  natural
