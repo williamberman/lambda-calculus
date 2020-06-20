@@ -14,7 +14,7 @@
                   [cadr rkt-cadr]
                   [cons rkt-cons]))
 
-(add-app-hook! (lambda (#:prev-term prev-term #:next-term next-term #:bound bound)
+(add-app-hook! (lambda (#:prev-term prev-term #:next-term next-term #:bound-value bound-value)
                  (apply-next-tag! prev-term next-term)))
 
 (define boolean 'boolean)

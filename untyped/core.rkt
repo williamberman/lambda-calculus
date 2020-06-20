@@ -1,12 +1,14 @@
 #lang racket/base
 
-(require [for-syntax syntax/parse racket/base])
+(require [for-syntax syntax/parse racket/base]
+         "../utils.rkt")
 
 (provide (rename-out [lambda-abstraction-stx make-lambda-abstraction])
          lambda-abstraction-binding
          lambda-abstraction-body
          print-lambda-abstraction
-         lambda-abstraction?)
+         lambda-abstraction?
+         map-lambda-abstraction-bindings)
 
 (define-syntax (lambda-abstraction-stx stx)
   (syntax-parse stx
@@ -20,3 +22,6 @@
 (define (print-lambda-abstraction lambda-abstraction)
   `(lambda ,(lambda-abstraction-binding lambda-abstraction)
      ,(lambda-abstraction-body lambda-abstraction)))
+
+(define (map-lambda-abstraction-bindings lambda-abstraction mapper)  
+  (tree-map mapper (lambda-abstraction-body mapper)))
