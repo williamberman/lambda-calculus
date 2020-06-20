@@ -33,3 +33,21 @@
 (define not (lambda a
               ((a false)
                true)))
+
+(module+ test
+  (require rackunit)
+  (check-equal? 'consequent (((if true) 'consequent) 'alternative))
+  (check-equal? 'alternative (((if false) 'consequent) 'alternative))
+  
+  (check-equal? true ((and true) true))
+  (check-equal? false ((and true) false))
+  (check-equal? false ((and false) true))
+  (check-equal? false ((and false) false))
+
+  (check-equal? true ((or true) true))
+  (check-equal? true ((or  true) false))
+  (check-equal? true ((or  false) true))
+  (check-equal? false ((or  false) false))
+
+  (check-equal? true (not false))
+  (check-equal? false (not true)))

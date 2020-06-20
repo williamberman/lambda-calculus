@@ -36,3 +36,18 @@
                      [init ((pair nil) nil)])
                  (first ((lst reducer) init)))))
 
+(module+ test
+  (require rackunit)
+  (define lst ((cons 1) nil))
+
+  (check-equal? (head lst) 1)
+
+  (check-equal? (tail lst) nil)
+
+  (check-equal? false (nil? lst))
+
+  (check-equal? true (nil? nil))
+
+  (check-equal 2 (head (tail (cons 1))))
+
+  )
