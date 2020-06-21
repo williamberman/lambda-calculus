@@ -1,4 +1,4 @@
-#lang racket/base                       ;
+#lang racket/base
 
 (provide register-printer!
          printer

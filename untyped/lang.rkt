@@ -26,16 +26,10 @@
                    "Print the underlying racket data type."
                    (lambda (lambda-abstraction) lambda-abstraction))
 
-(define (print-lambda-abstraction lambda-abstraction)
-  `(lambda ,(lambda-abstraction-binding lambda-abstraction)
-     ,(lambda-abstraction-body lambda-abstraction)))
-
 (register-printer! 'lambda-terms
                    "Print the lambda calculus interpretation of the term."
-                   (lambda (lambda-abstraction)
-                     `(lambda ,(lambda-abstraction-binding lambda-abstraction)
-                        ,(print-with-bindings lambda-abstraction))))
+                   print-lambda-abstraction-with-bindings)
 
-(set-print-mode! 'lambda-terms)
+(set-print-mode! 'pretty)
 
 

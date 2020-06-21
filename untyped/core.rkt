@@ -6,17 +6,15 @@
 (provide (rename-out [lambda-abstraction-stx make-lambda-abstraction])
          lambda-abstraction-binding
          lambda-abstraction-body
-         lambda-abstraction?
-         map-lambda-abstraction-bindings)
+         lambda-abstraction?)
 
 (define-syntax (lambda-abstraction-stx stx)
   (syntax-parse stx
     [(_ variable:id body:expr)
      (syntax      
-      (make-lambda-abstraction 'variable 'body (lambda (variable) body)))]))
+      (make-lambda-abstraction 'variable
+                               (list 'lambda 'variable 'body)
+                               (lambda (variable) body)))]))
 
 (define-struct lambda-abstraction (binding body func)
   #:property prop:procedure (struct-field-index func))
-
-(define (map-lambda-abstraction-bindings lambda-abstraction mapper)  
-  (tree-map mapper (lambda-abstraction-body mapper)))

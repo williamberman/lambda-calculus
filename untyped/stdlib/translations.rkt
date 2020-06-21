@@ -39,15 +39,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; TODO
-;; ((pair 1) 2) -> does not pretty print
-;;
-;; (define foo ((pair 1) 2))
-;; foo -> does pretty print
-
-;; I think this has something to do with the top most
-;; #%app not being called 
-
 (define pair-tag 'pair)
 (define-translation pair-tag)
 
@@ -87,7 +78,7 @@
 (set-translation-tags*! c1 natural)
 (set-translation-tags*! c2 natural)
 (set-translation-tags*! c3 natural)
-(set-translation-tags*! add natural natural natural) ;; TODO same problem as with pair
+(set-translation-tags*! add natural natural natural)
 (set-translation-tags*! subtract natural)
 (set-translation-tags*! multiply natural)
 (set-translation-tags*! power natural)
@@ -117,7 +108,7 @@
          (recur (rkt-cdr rkt-lst) (cons (rkt-car rkt-lst) lc-lst))))
    (recur (reverse rkt-lst) nil)))
 
-(set-translation-tags*! cons any list-tag list-tag) ;; TODO same problem as with pair
+(set-translation-tags*! cons any list-tag list-tag)
 (set-translation-tags*! nil list-tag)
 (set-translation-tags*! nil? list-tag boolean)
 (set-translation-tags*! head list-tag any)
