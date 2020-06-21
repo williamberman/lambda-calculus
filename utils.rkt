@@ -2,16 +2,22 @@
 
 (provide tree-map)
 
-(require racket/function)
+(require racket/function
+         racket/generic)
 
 (define (tree-map pred lst)
-  (if (not (list? lst))
+  (if (not (pair? lst))
+
       (pred lst)
+      
       (let loop ((lst lst)
                  (acc identity))
         (cond
           ((null? lst)
            (acc '()))
+
+          ((not (pair? lst))
+           (acc (pred lst)))
       
           ((not (pair? (car lst)))
            (loop (cdr lst) (lambda (r)

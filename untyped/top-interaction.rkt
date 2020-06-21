@@ -9,16 +9,19 @@
          "core.rkt"
          "bindings.rkt"
          "app.rkt"
+         "../utils.rkt"
+         racket/dict
          [for-syntax syntax/parse racket/base])
 
 (define pretty-printer-description
   "If a translator exists for the term, use it to translate the term into a human readable interpretation. Else, fall back to the 'lambda-terms printer.")
 
-;; TODO this should recursively walk the result
 (define (pretty-printer term)
-  (if (can-print-readable-translation? term)
-      (print-readable-translation term)
-      (print-with 'lambda-terms term)))
+  (if (lambda-abstraction? term)
+      (if (can-print-readable-translation? term)
+          (tree-map pretty-printer (print-readable-translation term))
+          (print-with 'lambda-terms term))
+      term))
 
 ;; TODO this should return multiple values for when something
 ;; entirely evaluates. The first return value will be the
