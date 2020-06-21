@@ -45,6 +45,9 @@
 ;; (define foo ((pair 1) 2))
 ;; foo -> does pretty print
 
+;; I think this has something to do with the top most
+;; #%app not being called 
+
 (define pair-tag 'pair)
 (define-translation pair-tag)
 

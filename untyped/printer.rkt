@@ -8,7 +8,7 @@
 
 (require "core.rkt")
 
-(define *print-mode* 'lambda-terms)
+(define *print-mode* #f)
 
 (define *printers* (make-hash))
 
@@ -22,17 +22,11 @@
   (set! *print-mode* print-mode))
 
 (define (printer lambda-abstraction)
-  ((hash-ref *printers* *print-mode*) lambda-abstraction))
+  (if (hash-has-key? *printers* *print-mode*)
+      ((hash-ref *printers* *print-mode*) lambda-abstraction)
+      (error 'printer "No printer for ~a" *print-mode*)))
 
 (define (print-mode?) *print-mode*)
 
 (define (print-with printer-key lambda-abstraction)
   ((hash-ref *printers* printer-key) lambda-abstraction))
-
-(register-printer! 'debug
-                   "Print the underlying racket data type."
-                   (lambda (lambda-abstraction) lambda-abstraction))
-
-(register-printer! 'lambda-terms
-                   "Print the lambda calculus interpretation of the term."
-                   print-lambda-abstraction)

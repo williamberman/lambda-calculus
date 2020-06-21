@@ -1,6 +1,10 @@
 #lang racket/base
 
-(provide reset-bindings-store!)
+(provide reset-bindings-store!
+         update-bindings-store!
+         print-with-bindings
+         ;; TODO remove
+         *bindings-store*)
 
 (require "core.rkt"
          "app.rkt"
@@ -22,9 +26,6 @@
   
   (hash-set! *bindings-store* next-term next-bindings))
 
-;; TODO should this side effect thing really go here
-(add-app-hook! update-bindings-store!)
-
 (define/contract (make-bindings)
   (-> bindings?)
   (make-immutable-hash))
@@ -41,10 +42,13 @@
             (lambda-abstraction-binding lambda-abstraction)
             bound-value))
 
-(define (print-with-bindings #:lambda-abstraction lambda-abstraction #:bindings bindings)
+(define (print-with-bindings lambda-abstraction)
+  (define bindings (hash-ref *bindings-store* lambda-abstraction (make-bindings)))
   (map-lambda-abstraction-bindings
    lambda-abstraction
    (lambda (symbol)
+     ;; TODO just having the same symbol is not the way to know it's the right binding
+     ;; i.e. (lambda foo (foo (lambda foo foo))) has two separate foo bindings
      ;; TODO do something with the bound value if it's a lambda-abstraction
      (if (hash-has-key? bindings symbol)
          (let

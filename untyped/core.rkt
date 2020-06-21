@@ -6,7 +6,6 @@
 (provide (rename-out [lambda-abstraction-stx make-lambda-abstraction])
          lambda-abstraction-binding
          lambda-abstraction-body
-         print-lambda-abstraction
          lambda-abstraction?
          map-lambda-abstraction-bindings)
 
@@ -18,10 +17,6 @@
 
 (define-struct lambda-abstraction (binding body func)
   #:property prop:procedure (struct-field-index func))
-
-(define (print-lambda-abstraction lambda-abstraction)
-  `(lambda ,(lambda-abstraction-binding lambda-abstraction)
-     ,(lambda-abstraction-body lambda-abstraction)))
 
 (define (map-lambda-abstraction-bindings lambda-abstraction mapper)  
   (tree-map mapper (lambda-abstraction-body mapper)))
