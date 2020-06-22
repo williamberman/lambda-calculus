@@ -7,10 +7,8 @@
 (require "printer.rkt"
          "translation.rkt"
          "core.rkt"
-         "bindings.rkt"
          "app.rkt"
          "../utils.rkt"
-         racket/dict
          [for-syntax syntax/parse racket/base])
 
 (define pretty-printer-description
@@ -20,18 +18,8 @@
   (if (lambda-abstraction? term)
       (if (can-print-readable-translation? term)
           (tree-map pretty-printer (print-readable-translation term))
-          (print-with 'lambda-terms term))
+          ((print-with 'lambda-terms) #:next-term term))
       term))
-
-;; TODO this should return multiple values for when something
-;; entirely evaluates. The first return value will be the
-;; result, the second will be the formatted lambda term.
-;; Maybe we handle the formatted lambda term in a different location because
-;; this is agnostic to the printer for lambda terms
-(define (printer-wrapper output)
-  (if (lambda-abstraction? output)
-      (printer output)
-      output))
 
 (define-syntax (top-interaction stx)
   (syntax-parse stx
@@ -42,13 +30,11 @@
     [(_ require form:expr ...) (syntax                                
                                 (require form ...))]
     
-    [(_ form:expr ...+) (syntax
-                         (begin
-                           (reset-bindings-store!)
-                           ;; TODO explain why explicitly calling app
-                           (printer-wrapper (app form ...))))]
+    [(_ form:expr arg:expr) (syntax
+                             (begin
+                               ;; App must be explicitly added for the outtermost function application
+                               (define result (app form arg))
+                               (printer #:prev-term form #:next-term result #:bound-value arg)))]
 
     [(_ . form:expr) (syntax
-                      (begin
-                        (reset-bindings-store!)                     
-                        (printer-wrapper form)))]))
+                      (printer #:next-term form))]))

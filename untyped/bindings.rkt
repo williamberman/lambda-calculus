@@ -1,18 +1,17 @@
 #lang racket/base
 
-(provide reset-bindings-store!
-         update-bindings-store!
-         print-lambda-abstraction-with-bindings)
+(provide update-bindings-store!
+         print-lambda-abstraction-with-bindings
+         bindings-for)
 
 (require "core.rkt"
-         "app.rkt"
          racket/contract
          racket/match)
 
-(define *bindings-store* (make-hash))
+(define *bindings-store* (make-weak-hash))
 
-(define (reset-bindings-store!)
-  (set! *bindings-store* (make-hash)))
+(define (bindings-for term)
+  (hash-ref *bindings-store* term (make-bindings)))
 
 (define bindings? (and/c hash? immutable?))
 
@@ -48,13 +47,32 @@
             (lambda-abstraction-binding lambda-abstraction)
             bound-value))
 
-(define/contract (print-lambda-abstraction-with-bindings lambda-abstraction)
-  (-> lambda-abstraction? list?)
+(define (print-lambda-abstraction-with-bindings #:prev-term [prev-term #f]
+                                                #:bound-value [bound-value #f]
+                                                #:next-term next-term)
   
-  (define bindings (hash-ref *bindings-store* lambda-abstraction (make-bindings)))
+  (define printed (if (lambda-abstraction? next-term)
+                      (x-print-lambda-abstraction-with-bindings
+                       (lambda-abstraction-body next-term)
+                       (hash-ref *bindings-store* next-term (make-bindings)))
+                      next-term))
+  
+  (if (lambda-abstraction? prev-term)
+      (let ([prev-term-printed (x-print-lambda-abstraction-with-bindings
+                                (caddr (lambda-abstraction-body prev-term))
+                                (hash-set (hash-ref *bindings-store* prev-term (make-bindings))
+                                          (lambda-abstraction-binding prev-term)
+                                          bound-value))])
+        (if (equal? printed prev-term-printed)
+            printed
+            (values printed prev-term-printed)))
+      printed))
+
+(define/contract (x-print-lambda-abstraction-with-bindings body bindings)
+  (-> list? bindings? list?)
 
   (map-lambda-abstraction-bindings
-     #:body (lambda-abstraction-body lambda-abstraction)
+     #:body body
      #:bindings bindings
      #:mapper map-binding))
 
@@ -62,7 +80,9 @@
   (if (hash-has-key? bindings literal)
       (let [(bound-value (hash-ref bindings literal))]
         (if (lambda-abstraction? bound-value)
-            (print-lambda-abstraction-with-bindings bound-value)
+            (print-lambda-abstraction-with-bindings #:next-term bound-value
+                                                    #:prev-term #f
+                                                    #:bound-value #f)
             bound-value))
       literal))
 
