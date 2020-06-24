@@ -55,7 +55,7 @@
   (define alternative-type (type-check (if-struct-alternative if-struct)))
   (check! consequent-type
           alternative-type
-          "Arms of conditional of have different types")
+          "Arms of conditional have different types")
   (unify consequent-type alternative-type))
 
 (define *type-checkers* (make-gvector))
