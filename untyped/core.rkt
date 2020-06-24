@@ -1,7 +1,6 @@
 #lang racket/base
 
-(require [for-syntax syntax/parse racket/base]
-         "../utils.rkt")
+(require [for-syntax syntax/parse racket/base])
 
 (provide (rename-out [lambda-abstraction-stx make-lambda-abstraction])
          lambda-abstraction-binding

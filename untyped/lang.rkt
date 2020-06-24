@@ -42,6 +42,8 @@
 (set-print-mode! 'pretty)
 
 (define (bindings-for-wrapper term)
-  (hash-map (bindings-for term) (lambda (key value) (list key (printer value #f)))))
+  (hash-map (bindings-for term)
+            (lambda (bound-symbol bound-value)
+              (list bound-symbol (printer #:next-term bound-value)))))
 
 
