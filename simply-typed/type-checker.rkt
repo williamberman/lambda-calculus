@@ -22,7 +22,8 @@
 (define (type-check-base term)
   (if (lambda-abstraction? term)
       (get-type-tag term)      
-      (let ([type-checker (find-type-checker term)])        
+      (let ([type-checker (find-type-checker term)])
+        
         (if type-checker
             (type-checker-identifier type-checker)
             Any))))

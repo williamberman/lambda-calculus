@@ -1,6 +1,7 @@
 #lang racket/base
 
-(require "core.rkt")
+(require "core.rkt"
+         racket/string)
 
 (provide print-type-signature)
 

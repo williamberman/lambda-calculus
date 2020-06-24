@@ -14,8 +14,7 @@
          type-checker-identifier)
 
 (require [for-syntax syntax/parse racket/base]
-         data/gvector
-         racket/string)
+         data/gvector)
 
 (define-struct type-checker (predicate identifier))
 
@@ -69,7 +68,7 @@
 
 (define (find-type-checker term)
   (findf (lambda (type-checker)
-           ((type-checker-identifier type-checker) term))
+           ((type-checker-predicate type-checker) term))
          ;; TODO probably need a prioritization method
          ;; Reverse so that Any is the last type checked
          (reverse (gvector->list *type-checkers*))))

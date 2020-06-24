@@ -1,9 +1,7 @@
-#lang racket/base
+#lang s-exp "../untyped/lang.rkt"
 
-;; #lang s-exp "../untyped/lang.rkt"
-
-(require "../untyped/stdlib/stdlib.rkt")
-(require "core.rkt")
+(require "core.rkt"
+         "../untyped/stdlib/stdlib.rkt")
 
 (define-base-type Number number?)
 (define-base-type String string?)
