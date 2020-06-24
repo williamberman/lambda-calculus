@@ -1,4 +1,5 @@
-#lang s-exp "../untyped/lang.rkt"
+#lang racket/base
+;; #lang s-exp "../untyped/lang.rkt"
 
 (require "../untyped/stdlib/stdlib.rkt")
 (require "core.rkt")
@@ -7,21 +8,28 @@
 (define-base-type String string?)
 (define-base-type Boolean boolean?)
 
-(define foo (lambda x "response"))
-(: foo Number String)
+(define-lc-type LCBoolean)
 
-(define bar (foo 1))
-(type-of bar) ;; String
+(: true LCBoolean)
+(: false LCBoolean)
+(: if LCBoolean (type-variable a) (type-variable a))
 
-(define-type Pair 'a 'b)
 
-(: pair 'a 'b (Pair 'a 'b))
+;; (define foo (lambda x "response"))
+;; (: foo Number String)
 
-(: first (Pair 'a 'b) 'a)
+;; (define bar (foo 1))
+;; (type-of bar) ;; String
 
-(: second (Pair 'a 'b) 'b)
+;; (define-type Pair 'a 'b)
 
-(: if Boolean 'a 'a)
+;; (: pair 'a 'b (Pair 'a 'b))
+
+;; (: first (Pair 'a 'b) 'a)
+
+;; (: second (Pair 'a 'b) 'b)
+
+;; (: if Boolean 'a 'a)
 
 ;; > pair
 ;; '(lambda fst
