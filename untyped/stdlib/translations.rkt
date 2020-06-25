@@ -79,11 +79,11 @@
 (set-translation-tags*! c2 natural)
 (set-translation-tags*! c3 natural)
 (set-translation-tags*! add natural natural natural)
-(set-translation-tags*! subtract natural)
-(set-translation-tags*! multiply natural)
-(set-translation-tags*! power natural)
-(set-translation-tags*! zero? natural)
-(set-translation-tags*! equal? natural)
+(set-translation-tags*! subtract natural natural natural)
+(set-translation-tags*! multiply natural natural natural)
+(set-translation-tags*! power natural natural natural)
+(set-translation-tags*! zero? natural boolean)
+(set-translation-tags*! equal? natural natural boolean)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
