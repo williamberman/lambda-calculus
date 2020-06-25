@@ -14,7 +14,7 @@
     [(_ (func:expr argument:expr))
      (syntax
       (type-check-helper (type-check func) (type-check argument)))]
-    ;; TODO what tag should I apply to literal
+    ;; TODO what syntax class should I apply to literal
     [(_ literal)
      (syntax
       (type-check-base literal))]))
@@ -32,8 +32,8 @@
   (set! argument-type (coerce-type argument-type))
   
   (when (type-variable? (car func-type))
-    (set! func-type (substitute-type-variable func-type argument-type)))  
-  
+    (set! func-type (substitute-type-variable func-type argument-type)))
+
   (if (equal? (car func-type) argument-type)
       (cdr func-type)
       (raise (type-error (car func-type) argument-type))))
@@ -46,6 +46,7 @@
 
 (define (substitute-type-variable func-type argument-type)
   (define substituting-symbol (type-variable-symbol (car func-type)))
+  
   (map (lambda (type)
          (if (and (type-variable? type)
                   (eq? (type-variable-symbol type)

@@ -28,10 +28,16 @@
      (syntax
       (begin
         ;; TODO ensure upper case
+        (check-type-identifier! 'identifier)
         (define identifier 'identifier)
         (gvector-add! *type-checkers*
                       (make-type-checker predicate
                                          'identifier))))]))
+
+(define (check-type-identifier! identifier)
+  (define first-char (string-ref (symbol->string identifier) 0))
+  (when (char-lower-case? first-char)
+    (error 'define-base-type "Type identifiers must start with an uppercase letter")))
 
 (define-base-type Any (lambda (term) #t))
 (define-base-type Unit (lambda (term) (eq? term unit)))
@@ -41,7 +47,9 @@
   (syntax-parse stx
     [(_ identifier:id)
      (syntax
-      (define identifier 'identifier))]))
+      (begin
+       (check-type-identifier! 'identifier)
+       (define identifier 'identifier)))]))
 
 (define *type-tags* (make-weak-hash))
 
@@ -53,15 +61,18 @@
 
 (define-syntax (process-typings stx)
   (syntax-parse stx
-    [(_ typing:id)
-     (if (char-lower-case? (string-ref (symbol->string 'typing) 0))
+    [(_ typing:id)     
+     (if (char-lower-case? (string-ref (symbol->string (syntax->datum #'typing)) 0))
          (syntax
           (type-variable 'typing))
          (syntax
           typing))]
     [(_ typing:id rest-typing:id ...)
      (syntax
-      (cons (process-typings typing) (process-typings rest-typing ...)))]))
+      (let ([processed-rest (process-typings rest-typing ...)])
+        (cons (process-typings typing) (if (list? processed-rest)
+                                           processed-rest
+                                           (list processed-rest)))))]))
 
 (define (get-type-tag term)
   (hash-ref *type-tags* term Any))

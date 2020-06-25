@@ -1,5 +1,11 @@
 #lang s-exp "../untyped/lang.rkt"
 
+(provide Number
+         String
+         Boolean
+         LCBoolean
+         )
+
 (require "core.rkt"
          "../untyped/stdlib/stdlib.rkt")
 

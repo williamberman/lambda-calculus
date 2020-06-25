@@ -10,9 +10,16 @@
 ;; TODO allow type checking to be turned on or off
 (define *type-checking* #t)
 
-;; TODO this doesn't allow define and require
+;; TODO top level set! does not work
 (define-syntax (top-interaction-wrapper stx)
-  (syntax-parse stx    
+  (syntax-parse stx
+    #:literals (define require)
+    [(_ define form:expr ...) (syntax                               
+                               (define form ...))]
+    
+    [(_ require form:expr ...) (syntax                                
+                                (require form ...))]
+    
     [(_ form:expr arg:expr) (syntax
                              (begin                               
                                (define type-result (print-type-signature
@@ -28,9 +35,9 @@
                       (begin                               
                         (define type-result (print-type-signature
                                              (type-check form)))
-
+                        
                         (call-with-values (lambda ()
-                                            (top-interaction form))
+                                            (top-interaction . form))
                                           (lambda result
                                             (apply values
                                                    (cons type-result result))))))]))
