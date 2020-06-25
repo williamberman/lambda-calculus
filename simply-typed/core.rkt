@@ -11,7 +11,8 @@
          type-variable-symbol
          get-type-tag
          type-checker-predicate
-         type-checker-identifier)
+         type-checker-identifier
+         function-signature?)
 
 (require [for-syntax syntax/parse racket/base]
          data/gvector)
@@ -73,6 +74,9 @@
         (cons (process-typings typing) (if (list? processed-rest)
                                            processed-rest
                                            (list processed-rest)))))]))
+
+(define (function-signature? type)
+  (list? type))
 
 (define (get-type-tag term)
   (hash-ref *type-tags* term Any))

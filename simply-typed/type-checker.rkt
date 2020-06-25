@@ -5,7 +5,8 @@
 
 (require [for-syntax syntax/parse racket/base]
          "../untyped/core.rkt"
-         "core.rkt")
+         "core.rkt"
+         "utils.rkt")
 
 (struct type-exn exn:fail ())
 
@@ -28,15 +29,22 @@
             (type-checker-identifier type-checker)
             Any))))
 
-(define (type-check-helper func-type argument-type)
+(define (type-check-helper func-type argument-type)  
   (set! argument-type (coerce-type argument-type))
+  (set! func-type (substitute-type-variable func-type argument-type))
   
-  (when (type-variable? (car func-type))
-    (set! func-type (substitute-type-variable func-type argument-type)))
+  (cond [(or (eq? Any func-type) (eq? Any argument-type))
+         Any]
+        [(not (function-signature? func-type))
+         (raise (function-application-type-error func-type))]
+        [(equal? (car func-type) argument-type)
+         (cdr func-type)]
+        [else
+         (raise (type-mismatch-type-error (car func-type) argument-type))]))
 
-  (if (equal? (car func-type) argument-type)
-      (cdr func-type)
-      (raise (type-error (car func-type) argument-type))))
+(define (function-application-type-error func-type)  
+  (type-error (format "Cannot apply expression of type ~a"
+                      (print-type-signature func-type))))
 
 (define (coerce-type type)
   (if (and (list? type)
@@ -45,18 +53,23 @@
       type))
 
 (define (substitute-type-variable func-type argument-type)
-  (define substituting-symbol (type-variable-symbol (car func-type)))
-  
-  (map (lambda (type)
-         (if (and (type-variable? type)
-                  (eq? (type-variable-symbol type)
-                       substituting-symbol))
-             argument-type
-             type))
-       func-type))
+  (if (and (function-signature? func-type)
+           (type-variable? (car func-type)))
+      (let ([substituting-symbol (type-variable-symbol (car func-type))])
+        (map (lambda (type)
+               (if (and (type-variable? type)
+                        (eq? (type-variable-symbol type)
+                             substituting-symbol))
+                   argument-type
+                   type))
+             func-type))
+      func-type))
 
-(define (type-error expected given)
-  (type-exn (format "Type Checker: type mismatch\nexpected: ~a\ngiven: ~a"
+(define (type-mismatch-type-error expected given)
+  (type-error (format "Type mismatch\nexpected: ~a\ngiven: ~a"
                     expected
-                    given)
+                    given)))
+
+(define (type-error message)
+  (type-exn (format "Type Checker: ~s" message)
             (current-continuation-marks)))
