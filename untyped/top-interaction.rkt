@@ -31,9 +31,9 @@
                                 (require form ...))]
     
     [(_ form:expr arg:expr) (syntax
-                             (begin
-                               ;; App must be explicitly added for the outtermost function application
-                               (define result (app form arg))
+                             ;; App must be explicitly added for the outtermost function application
+                             
+                             (let ([result (app form arg)])
                                (printer #:prev-term form #:next-term result #:bound-value arg)))]
 
     [(_ . form:expr) (syntax
