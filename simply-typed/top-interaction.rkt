@@ -23,7 +23,6 @@
       'on
       'off))
 
-;; TODO top level set! does not work
 (define-syntax (top-interaction-wrapper stx)
   (syntax-parse stx
     #:literals (define require)
@@ -35,24 +34,14 @@
     
     [(_ form:expr arg:expr) (syntax                             
                              (if *type-checking*
-                                 (let ([type-result (print-type-signature
-                                                     (type-check (form arg)))])
-
-                                   (call-with-values (lambda ()
-                                                       (top-interaction form arg))
-                                                     (lambda result
-                                                       (apply values
-                                                              (cons type-result result)))))
+                                 (begin
+                                   (displayln (print-type-signature (type-check (form arg))))
+                                   (top-interaction form arg))
                                  (top-interaction form arg)))]
 
     [(_ . form:expr) (syntax
                       (if *type-checking*
-                          (let ([type-result (print-type-signature
-                                              (type-check form))])
-                            
-                            (call-with-values (lambda ()
-                                                (top-interaction . form))
-                                              (lambda result
-                                                (apply values
-                                                       (cons type-result result)))))
+                          (begin
+                            (displayln (print-type-signature (type-check form)))
+                            (top-interaction . form))
                           (top-interaction . form)))]))

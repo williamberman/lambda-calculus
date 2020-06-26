@@ -22,12 +22,9 @@
 
 (define (type-check-base term)
   (if (lambda-abstraction? term)
-      (get-type-tag term)      
-      (let ([type-checker (find-type-checker term)])
-        
-        (if type-checker
-            (type-checker-identifier type-checker)
-            Any))))
+      (get-type-tag term)
+      (or (find-base-type term)
+          Any)))
 
 (define (type-check-helper func-type argument-type)  
   (set! argument-type (coerce-type argument-type))
@@ -67,8 +64,8 @@
 
 (define (type-mismatch-type-error expected given)
   (type-error (format "Type mismatch\nexpected: ~a\ngiven: ~a"
-                    expected
-                    given)))
+                      (print-type-signature expected)
+                      (print-type-signature given))))
 
 (define (type-error message)
   (type-exn (format "Type Checker: ~s" message)
