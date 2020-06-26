@@ -23,25 +23,34 @@
       'on
       'off))
 
+;; TODO handle exception
+(define-syntax (with-type-check stx)
+  (syntax-parse stx
+    [(_ to-check:expr to-exec:expr)
+     (syntax
+      (if *type-checking*
+          (with-handlers ([type-exn?
+                           (lambda (e) (displayln (exn-message e)))])
+            (displayln (print-type-signature (type-check to-check)))
+            to-exec)
+          to-exec))]))
+
 (define-syntax (top-interaction-wrapper stx)
   (syntax-parse stx
     #:literals (define require)
+    ;; TODO define loses type information
     [(_ define form:expr ...) (syntax                               
                                (define form ...))]
     
     [(_ require form:expr ...) (syntax                                
                                 (require form ...))]
     
-    [(_ form:expr arg:expr) (syntax                             
-                             (if *type-checking*
-                                 (begin
-                                   (displayln (print-type-signature (type-check (form arg))))
-                                   (top-interaction form arg))
-                                 (top-interaction form arg)))]
+    [(_ form:expr arg:expr) (syntax
+                             (with-type-check
+                               (form arg)
+                               (top-interaction form arg)))]
 
     [(_ . form:expr) (syntax
-                      (if *type-checking*
-                          (begin
-                            (displayln (print-type-signature (type-check form)))
-                            (top-interaction . form))
-                          (top-interaction . form)))]))
+                      (with-type-check
+                        form
+                        (top-interaction . form)))]))

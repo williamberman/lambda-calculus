@@ -63,10 +63,10 @@
       func-type))
 
 (define (type-mismatch-type-error expected given)
-  (type-error (format "Type mismatch\nexpected: ~a\ngiven: ~a"
+  (type-error (format "Type mismatch\n  expected: ~a\n  given: ~a"
                       (print-type-signature expected)
                       (print-type-signature given))))
 
 (define (type-error message)
-  (type-exn (format "Type Checker: ~s" message)
+  (type-exn (format "Type Checker: ~a" message)
             (current-continuation-marks)))
