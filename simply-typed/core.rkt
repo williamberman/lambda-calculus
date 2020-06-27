@@ -16,14 +16,16 @@
          function-signature?
          lc-type?
          lc-type-identifier
-         lc-type-constraints)
+         lc-type-constraints
+         (rename-out [process-typings type->]))
 
 (require [for-syntax syntax/parse racket/base]
          data/gvector)
 
 (define-struct base-type (identifier predicate))
 
-(define-struct type-variable (symbol))
+(define-struct type-variable (symbol)
+  #:transparent)
 
 (define-struct lc-type (identifier constraints apply-constraints)
   #:property prop:procedure (struct-field-index apply-constraints)
@@ -46,35 +48,27 @@
 
 (define (make-lc-type-wrapper identifier constraints)
   (define the-lc-type #f)
-
+  
   (define (apply-constraints . new-constraints)
     (define (helper current-constraints new-constraints)
-      (if (null? constraints)
-          current-constraints
-          (let* ([looking-for (car constraints)]
-                 [new-constraints (cdr new-constraints)]
-                 [type-variable-found #f]
-                 [current-constraints (map (lambda (type)
-                                             (if (and (not type-variable-found)
-                                                      (equal? type looking-for))
-
-                                                 (begin
-                                                   (set! type-variable-found #t)
-                                                   looking-for)
-
-                                                 type))
-                                           
-                                           current-constraints)])
-            
-            (if type-variable-found
-                (helper current-constraints
-                        new-constraints)
-                (raise "TODO something about trying to apply too many type variables")))))
+      (cond [(null? new-constraints)
+             current-constraints]
+            [(null? current-constraints)
+             (raise "TODO something about trying to apply too many type variables")]
+            [(type-variable? (car current-constraints))
+             (cons (car new-constraints) (helper (cdr current-constraints)
+                                                 (cdr new-constraints)))]
+            [else
+             (cons (car current-constraints) (helper (cdr current-constraints)
+                                                     (cdr new-constraints)))]))
     
     (make-lc-type-wrapper identifier
-                          (helper (lc-type-constraints the-lc-type) new-constraints)))
+                          (helper (lc-type-constraints the-lc-type)
+                                  new-constraints)))
   
-  (set! the-lc-type (make-lc-type identifier constraints apply-constraints))
+  (set! the-lc-type (make-lc-type identifier
+                                  constraints
+                                  apply-constraints))
   
   the-lc-type)
 
@@ -101,11 +95,13 @@
 
 (define-syntax (define-lc-type stx)
   (syntax-parse stx
+    ;; TODO this likely needs to do some checks on the constraints
+    ;; for repeats/lower case and what not
     [(_ identifier:id constraints:id ...)
      (syntax
       (begin
        (check-type-identifier! 'identifier)
-       (define identifier (make-lc-type-wrapper 'identifier (list constraints ...)))))]))
+       (define identifier (make-lc-type-wrapper 'identifier (process-typings constraints ...)))))]))
 
 (define *type-tags* (make-weak-hash))
 
@@ -113,19 +109,35 @@
 ;; this is an acceptable type to apply
 (define-syntax (: stx)
   (syntax-parse stx
-    [(_ term:id typing:id ...)
+    [(_ term:id typing:expr ...)
      (syntax
       (hash-set! *type-tags* term (process-typings typing ...)))]))
 
+;; TODO isn't dealing with nestings
+;; (type-> Boolean (type-> Boolean String) Number)
 (define-syntax (process-typings stx)
   (syntax-parse stx
+    [(_)
+     (syntax
+      (list))]
+    
+    [(_ (typing:id rest-typing:expr ...))
+     (syntax
+      (let ([processed-rest (process-typings rest-typing ...)]
+            [processed-typing (process-typings typing)])
+        (if (lc-type? processed-typing)            
+            (apply processed-typing processed-rest)
+            (list (cons processed-typing (if (list? processed-rest)
+                                             processed-rest
+                                             (list processed-rest)))))))]
     [(_ typing:id)     
      (if (char-lower-case? (string-ref (symbol->string (syntax->datum #'typing)) 0))
          (syntax
           (type-variable 'typing))
          (syntax
           typing))]
-    [(_ typing:id rest-typing:id ...)
+    
+    [(_ typing:id rest-typing:expr ...)
      (syntax
       (let ([processed-rest (process-typings rest-typing ...)])
         (cons (process-typings typing) (if (list? processed-rest)

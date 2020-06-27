@@ -41,7 +41,7 @@
                                 (require form ...))]
     
     [(_ form:expr arg:expr) (syntax
-                             ;; App must be explicitly added for the outtermost function application
+                             ;; App must be explicitly added for the outtermost function application 
                              (let ([result (app form arg)])
                                (call-with-values (lambda ()
                                                    (printer #:prev-term form
@@ -51,7 +51,12 @@
                                                    (apply values
                                                           (filter filter-result results))))))]
 
-    [(_ . form:expr) (syntax
-                      (let ([result (printer #:next-term form)])
-                        (when (filter-result result)
-                          result)))]))
+    [(_ form:expr) (syntax                    
+                    (let ([result (printer #:next-term form)])                      
+                      (when (filter-result result)
+                        result)))]
+
+    [(_ . form:expr) (syntax                    
+                    (let ([result (printer #:next-term form)])                      
+                      (when (filter-result result)
+                        result)))]))

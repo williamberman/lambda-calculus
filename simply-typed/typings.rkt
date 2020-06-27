@@ -3,7 +3,8 @@
 (provide Number
          String
          Boolean
-         LCBoolean)
+         LCBoolean
+         LCPair)
 
 (require "core.rkt"
          "../untyped/stdlib/stdlib.rkt")
@@ -25,9 +26,9 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; (define-lc-type LCPair a b)
+(define-lc-type LCPair a b)
 
-;; (: pair a b (LCPair a b))
+(: pair a b (LCPair a b))
 ;; (: first (LCPair a b) a)
 ;; (: second (LCPair a b) b)
 

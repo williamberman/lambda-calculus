@@ -16,15 +16,17 @@
      (syntax
       (type-check-helper (type-check func) (type-check argument)))]
     ;; TODO what syntax class should I apply to literal
-    [(_ literal)
+    [(_ literal:expr)
      (syntax
       (type-check-base literal))]))
 
-(define (type-check-base term)
-  (if (lambda-abstraction? term)
-      (get-type-tag term)
-      (or (find-base-type term)
-          Any)))
+(define (type-check-base term)  
+  (cond [(lambda-abstraction? term)
+         (get-type-tag term)]
+        [(lc-type? term)
+         term]
+        [else (or (find-base-type term)
+                  Any)]))
 
 (define (type-check-helper func-type argument-type)  
   (set! argument-type (coerce-type argument-type))
