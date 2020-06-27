@@ -7,3 +7,5 @@
          "type-checker.rkt"
          (rename-in "top-interaction.rkt"
                     [top-interaction #%top-interaction]))
+
+(define foo (Type-> a String (Type-> Boolean String)))

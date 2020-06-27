@@ -17,7 +17,7 @@
          lc-type?
          lc-type-identifier
          lc-type-constraints
-         (rename-out [process-typings type->]))
+         (rename-out [Type-> Type->]))
 
 (require [for-syntax syntax/parse racket/base]
          data/gvector)
@@ -101,7 +101,7 @@
      (syntax
       (begin
        (check-type-identifier! 'identifier)
-       (define identifier (make-lc-type-wrapper 'identifier (process-typings constraints ...)))))]))
+       (define identifier (make-lc-type-wrapper 'identifier (Type-> constraints ...)))))]))
 
 (define *type-tags* (make-weak-hash))
 
@@ -111,20 +111,25 @@
   (syntax-parse stx
     [(_ term:id typing:expr ...)
      (syntax
-      (hash-set! *type-tags* term (process-typings typing ...)))]))
+      (hash-set! *type-tags* term (Type-> typing ...)))]))
 
 ;; TODO isn't dealing with nestings
 ;; (type-> Boolean (type-> Boolean String) Number)
-(define-syntax (process-typings stx)
+(define-syntax (Type-> stx)    
   (syntax-parse stx
+    #:literals (Type->)
     [(_)
      (syntax
       (list))]
+
+    [(_ (Type-> rest-typing:expr ...))
+     (syntax
+      (list (Type-> rest-typing ...)))]
     
     [(_ (typing:id rest-typing:expr ...))
      (syntax
-      (let ([processed-rest (process-typings rest-typing ...)]
-            [processed-typing (process-typings typing)])
+      (let ([processed-rest (Type-> rest-typing ...)]
+            [processed-typing (Type-> typing)])
         (if (lc-type? processed-typing)            
             (apply processed-typing processed-rest)
             (list (cons processed-typing (if (list? processed-rest)
@@ -139,8 +144,8 @@
     
     [(_ typing:id rest-typing:expr ...)
      (syntax
-      (let ([processed-rest (process-typings rest-typing ...)])
-        (cons (process-typings typing) (if (list? processed-rest)
+      (let ([processed-rest (Type-> rest-typing ...)])
+        (cons (Type-> typing) (if (list? processed-rest)
                                            processed-rest
                                            (list processed-rest)))))]))
 

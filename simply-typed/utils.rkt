@@ -24,7 +24,7 @@
                    (map (lambda (x-type)
                           (define printed (print-type-signature x-type))
                           (cond [(and (list? x-type)
-                                      ((not (null? (cdr x-type)))))
+                                      (not (null? (cdr x-type))))
                                  (wrap-in-parens printed)]
                                 [else printed]))
                         type)
@@ -41,7 +41,7 @@
                                      (string-join (map (lambda (x-type)
                                                          (define printed (print-type-signature x-type))
                                                          (cond [(and (list? x-type)
-                                                                     ((not (null? (cdr x-type)))))
+                                                                     (not (null? (cdr x-type))))
                                                                 (wrap-in-parens printed)]
                                                                [(and (lc-type? x-type)
                                                                      (not (null? (lc-type-constraints x-type))))

@@ -57,6 +57,6 @@
                         result)))]
 
     [(_ . form:expr) (syntax                    
-                    (let ([result (printer #:next-term form)])                      
-                      (when (filter-result result)
-                        result)))]))
+                      (let ([result (printer #:next-term form)])                      
+                        (when (filter-result result)
+                          result)))]))
