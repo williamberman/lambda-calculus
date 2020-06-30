@@ -14,6 +14,7 @@
     [(lc:assignment? term-or-terms) (lc:print-assignment term-or-terms)]
     [(lc:application? term-or-terms) (lc:print-application term-or-terms)]
     [(lc:variable? term-or-terms) (lc:print-variable term-or-terms)]
+    [(lc:native-data-type? term-or-terms) (lc:print-native-data-type term-or-terms)]
     [else (error 'lc:print "Unknown term ~a" term-or-terms)]))
 
 (define (lc:print-abstraction abstraction)
@@ -31,3 +32,6 @@
 
 (define (lc:print-variable variable)
   (lc:variable-binding variable))
+
+(define (lc:print-native-data-type native)
+  (lc:native-data-type-data native))

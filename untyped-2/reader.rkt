@@ -3,7 +3,8 @@
 (provide lc:assignment-macro
          lc:variable-macro
          lc:application-macro
-         lc:abstraction-macro)
+         lc:abstraction-macro
+         lc:native-data-type-macro)
 
 (require "core.rkt"
          [for-syntax syntax/parse racket/base])
@@ -32,4 +33,8 @@
      (syntax
       (lc:abstraction 'binding (list body ...)))]))
 
-
+(define-syntax (lc:native-data-type-macro stx)
+  (syntax-parse stx
+    [(_ . data:expr)
+     (syntax
+      (lc:native-data-type (#%datum . data)))]))

@@ -6,7 +6,7 @@
 (struct lc:assignment (binding body))
 (struct lc:application (recipient argument))
 (struct lc:variable (binding))
-
+(struct lc:native-data-type (data))
 
 
 

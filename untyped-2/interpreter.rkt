@@ -11,6 +11,7 @@
     [(lc:assignment? term-or-terms) (lc:eval-assignment term-or-terms env)]
     [(lc:application? term-or-terms) (lc:eval-application term-or-terms env)]
     [(lc:variable? term-or-terms) (lc:eval-variable term-or-terms env)]
+    [(lc:native-data-type? term-or-terms) (lc:eval-native-data-type term-or-terms env)]
     [else (error 'lc:eval "Unknown term ~a" term-or-terms)]))
 
 (define (lc:eval* terms env)
@@ -55,3 +56,6 @@
                                     "~a is unbound"
                                     (lc:variable-binding variable))))
         env))
+
+(define (lc:eval-native-data-type native env)
+  (cons native env))
