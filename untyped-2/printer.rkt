@@ -21,7 +21,6 @@
   `(lambda ,(lc:abstraction-binding abstraction)
      ,@(lc:print (lc:abstraction-body abstraction))))
 
-
 (define (lc:print-assignment assignment)
   `(define ,(lc:assignment-binding assignment)
      ,@(lc:print (lc:assignment-body assignment))))

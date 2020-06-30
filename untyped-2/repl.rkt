@@ -20,10 +20,19 @@
      (syntax
       (lc:print (repl-eval! form)))]))
 
-;; TODO look for example
 (define-syntax (module-begin stx)
   (syntax-parse stx
     [(_ module-body:expr ...)
      (syntax
       (#%module-begin
-       (repl-eval! (list module-body ...))))]))
+       (module-begin-helper module-body ...)))]))
+
+(define-syntax (module-begin-helper stx)
+  (syntax-parse stx
+    [(_)
+     (syntax (void))]
+    [(_ module-body:expr rest-module-body:expr ...)
+     (syntax
+      (begin
+        (lc:print (repl-eval! module-body))
+        (module-begin-helper rest-module-body ...)))]))

@@ -43,10 +43,15 @@
   (define the-argument (car (lc:eval (lc:application-argument application)
                                      env)))
 
-  (cons (lc:eval (lc:abstraction-body the-abstraction)
-                 (hash-set env
-                           (lc:abstraction-binding the-abstraction)
-                           the-argument))
+  (define next-env (hash-set env
+                             (lc:abstraction-binding the-abstraction)
+                             the-argument))
+
+  (define result (lc:eval (lc:abstraction-body the-abstraction) next-env))
+
+  (cons (substitute-env (car result)
+                        (list (lc:abstraction-binding the-abstraction))
+                        (cdr result))
         env))
 
 (define (lc:eval-variable variable env)
@@ -59,3 +64,38 @@
 
 (define (lc:eval-native-data-type native env)
   (cons native env))
+
+(define (substitute-env term to-substitute env)
+  (define (helper term to-substitute)
+    (cond
+      [(null? to-substitute) term]
+      [(lc:abstraction? term)
+       (let ([to-substitute-filtered (filter
+                                      (lambda (check)
+                                        (not
+                                         (equal?
+                                          check
+                                          (lc:abstraction-binding term))))
+                                      to-substitute)])
+         (lc:abstraction (lc:abstraction-binding term)
+                         (map (lambda (sub-term)
+                                (helper sub-term to-substitute-filtered))
+                              (lc:abstraction-body term))))]
+      
+      [(lc:assignment? term) (lc:assignment (lc:assignment-binding term) 
+                                            (map helper (lc:assignment-body term)))]
+      
+      [(lc:application? term) (lc:application (helper (lc:application-recipient term)
+                                                      to-substitute)
+                                              (helper (lc:application-argument term)
+                                                      to-substitute))]
+      
+      [(lc:variable? term) (if (member (lc:variable-binding term) to-substitute)
+                               (hash-ref env (lc:variable-binding term))
+                               term)]
+      
+      [(lc:native-data-type? term) term]
+      
+      [else (error 'lc:eval "Unknown term ~a" term)]))
+  
+  (helper term to-substitute))
