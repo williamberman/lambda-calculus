@@ -26,11 +26,11 @@
      (syntax
       (lc->-application-reducer (lc-> recipient) arguments ...))]
     [(_ parsed:expr)     
-     (let ([expanded (syntax->datum (local-expand #'parsed 'expression #f))])
+     (let ([expanded (syntax->datum (local-expand #'parsed 'expression #f))])       
        (if (or (string? expanded)
                (number? expanded)
                (symbol? expanded))
-           (datum->syntax stx (list 'lc:native-data-type-macro expanded))
+           (datum->syntax stx (cons 'lc:native-data-type-macro expanded))           
            (raise-syntax-error 'lc-> "Not a native data type")))]))
 
 (define-syntax (lc->-application-reducer stx)
