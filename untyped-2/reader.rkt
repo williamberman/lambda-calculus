@@ -64,34 +64,10 @@
      (syntax
       (lc:application-macro (lc:application-macro recipient argument) rest-arguments ...))]))
 
-;; TODO
-;; > (define true (lambda (tru fls) tru))
-; lc:abstraction: contract violation
-;   expected: list?
-;   given: #<lc:abstraction>
-;   in: the 2nd argument of
-;       (->
-;        symbol?
-;        (listof
-;         (or/c
-;          lc:native-data-type?
-;          lc:variable?
-;          lc:application?
-;          lc:assignment?
-;          lc:abstraction?))
-;        any)
-;   contract from: 
-;       /home/wlbberman/git/lambda-calculus/untyped-2/core.rkt
-;   blaming: /home/wlbberman/git/lambda-calculus/untyped-2/stdlib/boolean.rkt
-;    (assuming the contract is correct)
-;   at: /home/wlbberman/git/lambda-calculus/untyped-2/core.rkt:11.8
-; Context:
-;  /usr/share/racket/collects/racket/repl.rkt:11:26
-
-(define-syntax (lc:abstraction-macro stx)
+(define-syntax (lc:abstraction-macro stx)  
   (syntax-parse stx
     [(_ binding:id body:expr ...+)
-     (syntax
+     (syntax            
       (lc:abstraction 'binding (list body ...)))]
     [(_ (binding:id) body:expr ...+)
      (syntax
@@ -99,8 +75,8 @@
     [(_ (binding:id rest-bindings:id ...+) body:expr ...+)
      (syntax
       (lc:abstraction 'binding
-                      (lc:abstraction-macro (rest-bindings ...)
-                                            body ...)))]))
+                      (list (lc:abstraction-macro (rest-bindings ...)
+                                                  body ...))))]))
 
 ;; TODO does not support symbols
 (define-syntax (lc:native-data-type-macro stx)
