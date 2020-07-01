@@ -83,7 +83,9 @@
                               (lc:abstraction-body term))))]
       
       [(lc:assignment? term) (lc:assignment (lc:assignment-binding term) 
-                                            (map helper (lc:assignment-body term)))]
+                                            (map (lambda (sub-term)
+                                                   (helper sub-term to-substitute))
+                                                 (lc:assignment-body term)))]
       
       [(lc:application? term) (lc:application (helper (lc:application-recipient term)
                                                       to-substitute)

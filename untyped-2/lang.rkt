@@ -6,7 +6,8 @@
                      [lc:abstraction-macro lambda]
                      [lc:native-data-type-macro #%datum]
                      [top-interaction #%top-interaction]
-                     [module-begin #%module-begin]))
+                     [module-begin #%module-begin])
+         require)
 
 (require "reader.rkt"
          "repl.rkt")

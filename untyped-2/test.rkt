@@ -1,9 +1,11 @@
 #lang s-exp "lang.rkt"
 
-(define foo (lambda x x))
+;; (require "stdlib/boolean.rkt")
 
-(define bar (lambda y (y (lambda z z))))
+;; (define foo (lambda x x))
 
-(define baz (lambda y (lambda z (bar y))))
+;; (define bar (lambda y (y (lambda z z))))
 
-(baz bar)
+;; (define baz (lambda y (lambda z (bar y))))
+
+;; (baz bar)
